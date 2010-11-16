@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:install-manifest">
+        <em:id>xvc@renatorodrigues.com</em:id>
+        <em:name>XUL Vídeo Converter</em:name>
+        <em:version>1.2</em:version>
+        <em:description>Convert local video files</em:description>
+        <em:creator>Renato Rodrigues (renato.sp@gmail.com)</em:creator>
+        <em:homepageURL>http://www.renatorodrigues.com</em:homepageURL>
+        <em:iconURL>chrome://xvc/skin/logo.gif</em:iconURL>
+        <em:type>2</em:type> <!-- type=extension --> 
+
+		<em:localized>
+			<Description>
+			<em:locale>pt-BR</em:locale>
+			<em:name>xvc conversor de vídeo</em:name>
+			<em:description>Converte os vídeos de arquivos locais</em:description>
+			</Description>
+		</em:localized> 
+
+        <em:targetApplication>
+           <!-- Firefox -->
+           <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>3.0</em:minVersion>
+                <em:maxVersion>4.*</em:maxVersion>
+           </Description>
+        </em:targetApplication>
+		
+		<em:file>
+			<Description>
+				<em:package>content/</em:package>
+				<em:skin>skin/</em:skin>
+				<em:locale>locale/pt-BR/</em:locale>
+			</Description>
+		</em:file>
+    </Description>
+</RDF>

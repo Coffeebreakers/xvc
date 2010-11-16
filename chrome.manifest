@@ -1,0 +1,5 @@
+content xvc		chrome/content/ xpcnativewrappers=no
+locale	xvc		pt-BR   chrome/locale/pt-BR/
+skin	xvc		classic/1.0 chrome/skin/
+
+overlay chrome://browser/content/browser.xul chrome://xvc/content/xvcOverlay.xul
