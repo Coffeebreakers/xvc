@@ -205,15 +205,19 @@ var xvc = {
 		newStatusBarIcon.setAttribute('type','menu');
         //
 		
+        
+        // TODO pegar os formatos possiveis no about:config
 		for(var i in xvc.availableFormats) {
-            //xvc.availableFormats[i], xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] );
-            var tempMenuItem = xvc.addFormatMenu(xvc.availableFormats[i], xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] ));
-			popup.appendChild(tempMenuItem);
-			appPopup.appendChild(tempMenuItem);
-			statusBarPopup.appendChild(tempMenuItem);
+            var format = xvc.availableFormats[i];
+            var label = xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] );
+			popup.appendChild(xvc.addFormatMenu(format,label));
+			appPopup.appendChild(xvc.addFormatMenu(format,label));
+			statusBarPopup.appendChild(xvc.addFormatMenu(format,label));
 		}
+        
 		popup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
-		
+		appPopup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
+		statusBarPopup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
 		document.getElementById('menu_ToolsPopup').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
         document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
         document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
