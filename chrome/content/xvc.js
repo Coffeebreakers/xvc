@@ -195,12 +195,6 @@ var xvc = {
 	},
 	
 	initRemix: function() {
-        var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-        var versionChecker = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-        
-
-        if(versionChecker.compare(appInfo.version, "4.0") >= 0) {
-        }
         xvc.availableFormats = Application.prefs.getValue("extensions.xvc.availableFormats",0).split(',');
 		xvc.checkEncoder(xvc.availableFormats);
         
