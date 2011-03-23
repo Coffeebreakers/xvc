@@ -4,12 +4,14 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>xvc@renatorodrigues.com</em:id>
         <em:name>XUL Vídeo Converter</em:name>
-        <em:version>1.3</em:version>
+        <em:version>1.4</em:version>
         <em:description>Convert local video files</em:description>
         <em:creator>Renato Rodrigues (renato.sp@gmail.com)</em:creator>
-        <em:homepageURL>http://www.renatorodrigues.com</em:homepageURL>
+        <em:homepageURL>https://github.com/MarioRinaldi/xvc/</em:homepageURL>
         <em:iconURL>chrome://xvc/skin/logo.gif</em:iconURL>
         <em:type>2</em:type> <!-- type=extension --> 
+        <em:updateLink>https://github.com/MarioRinaldi/xvc/blob/master/xvc.xpi</em:updateLink>
+        <em:updateInfoURL>https://github.com/MarioRinaldi/xvc/update-info/1.4.xhtml</em:updateInfoURL>
 
 		<em:localized>
 			<Description>

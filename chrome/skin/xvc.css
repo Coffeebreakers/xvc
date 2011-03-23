@@ -4,3 +4,6 @@
     list-style-image: url("logo-16.jpg");
     -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
+#xvc-appbar{
+    background-color: #FFF;
+}
