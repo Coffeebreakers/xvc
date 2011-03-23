@@ -184,23 +184,46 @@ var xvc = {
 		xvc.availableFormats = xvc.stringBundle.getString('xvc.availableFormats').split(',');
 		xvc.checkEncoder(xvc.availableFormats);
 		
+        // item no menu ferramentas
 		var newMenu = document.createElement('menu');
 		var popup = newMenu.appendChild(document.createElement('menupopup'));
 		newMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+		newMenu.setAttribute('id', 'xvc-toolsmenu');
+
+        // item no menu firefox (appmenu) da versao 4
+		var newAppMenu = document.createElement('splitmenu');
+		var appPopup = newAppMenu.appendChild(document.createElement('menupopup'));
+		newAppMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+		newAppMenu.setAttribute('id', 'xvc-appmenu');
+
+        // item no status bar        
+        var newStatusBarIcon = document.createElement('toolbarbutton');
+		var statusBarPopup = newStatusBarIcon.appendChild(document.createElement('menupopup'));
+		newStatusBarIcon.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+		newStatusBarIcon.setAttribute('id','xvc-appbar');
+		newStatusBarIcon.setAttribute('removable','true');
+		newStatusBarIcon.setAttribute('type','menu');
+        //
 		
 		for(var i in xvc.availableFormats) {
-			popup.appendChild( xvc.addFormatMenu(xvc.availableFormats[i], xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] )) )
+            //xvc.availableFormats[i], xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] );
+            var tempMenuItem = xvc.addFormatMenu(xvc.availableFormats[i], xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] ));
+			popup.appendChild(tempMenuItem);
+			appPopup.appendChild(tempMenuItem);
+			statusBarPopup.appendChild(tempMenuItem);
 		}
 		popup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
 		
 		document.getElementById('menu_ToolsPopup').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
-		document.getElementById('contentAreaContextMenu').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
+        document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
+        document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
 	},
 	
 	addFormatMenu: function(format, label) {
 		var newMenuItem = document.createElement('menuitem');
 		newMenuItem.setAttribute('format' , format);
 		newMenuItem.setAttribute('label' , label);
+		newMenuItem.setAttribute('command', xvc.convertMedia);
 		newMenuItem.addEventListener('command', xvc.convertMedia, false);
 		return newMenuItem;
 	},

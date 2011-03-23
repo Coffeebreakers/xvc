@@ -1,1 +1,6 @@
 /* Nada por enquanto... */
+
+#xvc-toolsmenu, #xvc-appmenu, #xvc-appbar {
+    list-style-image: url("logo-16.jpg");
+    -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
