@@ -1,6 +1,7 @@
+
 var xvc = {
   
-	init: function() {
+	init: function () {
 		xvc.stringBundle = document.getElementById('xvc_stringbundle');
 		xvc.outputFormats = xvc.stringBundle.getString('xvc.outputFormats').split(',');
 		xvc.checkEncoder(xvc.outputFormats);
@@ -90,16 +91,20 @@ var xvc = {
 	},*/
 	
 	// Ugly, but the only way to launch external command line programs with parameters :-(
-	executeConverterLaunch: function(outputFormats) {
-		var directory = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("TmpD", Components.interfaces.nsIFile);
-		var localFile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
-		var fileOutputStream = Components.classes['@mozilla.org/network/file-output-stream;1'].createInstance(Components.interfaces.nsIFileOutputStream);
+	executeConverterLaunch: function (outputFormats) {
+        var directory, localFile, fileOutputStream, fileContent,
+            i, j, encoderPath, encoderArgs;
+        
+		directory = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("TmpD", Components.interfaces.nsIFile);
+		localFile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+		fileOutputStream = Components.classes['@mozilla.org/network/file-output-stream;1'].createInstance(Components.interfaces.nsIFileOutputStream);
 
-		var fileContent = "chcp 1252\n" + xvc.stringBundle.getFormattedString('xvc.homeCommand' , [directory.path]) + "\n";
-		for(var i in xvc.inputFiles) {
-			for(var j in outputFormats) {
-				var encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + outputFormats[j]);
-				var encoderArgs = xvc.stringBundle.getFormattedString( ('xvc.encoder.args.' + outputFormats[j]) , [ xvc.inputFiles[i], (xvc.inputFiles[i].replace(/\.[^.]*$/,'') + '_' + outputFormats[j]), (xvc.inputFiles[i].replace(/\.[^.]*$/,'')) ] );
+		fileContent = "chcp 1252\n" + xvc.stringBundle.getFormattedString('xvc.homeCommand', [directory.path]) + "\n";
+		
+        for (i in xvc.inputFiles) {
+			for (j in outputFormats) {
+				encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + outputFormats[j]);
+				encoderArgs = xvc.stringBundle.getFormattedString(('xvc.encoder.args.' + outputFormats[j]), [ xvc.inputFiles[i], (xvc.inputFiles[i].replace(/\.[^.]*$/, '') + '_' + outputFormats[j]), (xvc.inputFiles[i].replace(/\.[^.]*$/, ''))]);
 				
 				fileContent += '"' + encoderPath + '" ' + encoderArgs + "\n";
 			}
@@ -107,9 +112,9 @@ var xvc = {
 		fileContent += xvc.stringBundle.getFormattedString('xvc.revealCommand', [xvc.inputFiles[0]]);
 		
 		try {
-			localFile.initWithPath(xvc.stringBundle.getFormattedString('xvc.batchFile' , [directory.path]));
-			fileOutputStream.init(localFile, 0x02 | 0x08 | 0x20, 00666, 0)
-			fileOutputStream.write(fileContent, fileContent.length)
+			localFile.initWithPath(xvc.stringBundle.getFormattedString('xvc.batchFile', [directory.path]));
+			fileOutputStream.init(localFile, 0x02 | 0x08 | 0x20, 00666, 0);
+			fileOutputStream.write(fileContent, fileContent.length);
 			fileOutputStream.close();
 			localFile.launch();
 		} catch (e) {
@@ -118,16 +123,21 @@ var xvc = {
 	},
 	
 	// Sadly the following function doesn't work with command line programs (like mencoder) :-(
-	executeConverterProcess: function(outputFormats) {
-		var localFile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
-		var process = Components.classes['@mozilla.org/process/util;1'].createInstance(Components.interfaces.nsIProcess);
+	executeConverterProcess: function (outputFormats) {
+        var localFile, process,
+            i, j, encoderPath, strEncoderArgs, encoderArgs = null;
 		
-		for(var i in xvc.inputFiles) {
-			for(var j in outputFormats) {
-				var encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + outputFormats[j]);
-				var strEncoderArgs = xvc.stringBundle.getFormattedString( ('xvc.encoder.args.' + outputFormats[j]) , [xvc.inputFiles[i].replace(/\.[^.]*$/,'')] );
-				var encoderArgs = strEncoderArgs.match(/-[^-]*/g);
-				if(encoderArgs === null) { encoderArgs = new Array };
+        localFile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+		process = Components.classes['@mozilla.org/process/util;1'].createInstance(Components.interfaces.nsIProcess);
+		
+		for (i in xvc.inputFiles) {
+			for (j in outputFormats) {
+				encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + outputFormats[j]);
+				strEncoderArgs = xvc.stringBundle.getFormattedString(('xvc.encoder.args.' + outputFormats[j]), [xvc.inputFiles[i].replace(/\.[^.]*$/, '')]);
+				encoderArgs = strEncoderArgs.match(/-[^-]*/g);
+				if (encoderArgs === null) {
+                    encoderArgs = [];
+                };
 				encoderArgs.unshift(xvc.inputFiles[i]);
 				//prompt('',encoderArgs.join(' '));
 				
@@ -142,16 +152,18 @@ var xvc = {
 		}
 	},
 	
-	checkEncoder: function(formats) {
-		var localFile = Components.classes['@mozilla.org/file/local;1'].getService(Components.interfaces.nsILocalFile);
+	checkEncoder: function (formats) {
+		var localFile, i, encoderPath;
 		
-		for(var i in formats) {
-			var encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + formats[i]);
+        localFile = Components.classes['@mozilla.org/file/local;1'].getService(Components.interfaces.nsILocalFile);
+		
+		for (i in formats) {
+			encoderPath = xvc.stringBundle.getString('xvc.encoder.path.' + formats[i]);
 			
 			try {
 				localFile.initWithPath(encoderPath);
 				if (!localFile.exists()){
-					alert( xvc.stringBundle.getFormattedString('xvc.alert.encoderNotFound', [formats[i], encoderPath]) )
+					alert(xvc.stringBundle.getFormattedString('xvc.alert.encoderNotFound', [formats[i], encoderPath]) )
 					xvc.installEncoder(encoderPath);
 				};
 			} catch(e) {
@@ -161,11 +173,13 @@ var xvc = {
 		return true;
 	},
 	
-	installEncoder: function(encoderPath){
-		var process = Components.classes["@mozilla.org/process/util;1"].getService(Components.interfaces.nsIProcess);
-		var localFile  = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
-		var extensionPath = Components.classes['@mozilla.org/extensions/manager;1'].getService(Components.interfaces.nsIExtensionManager).getInstallLocation('xvc@mais.uol.com.br').getItemLocation('xvc@mais.uol.com.br');
-		var installerPath = extensionPath.path + '\\' + encoderPath.toString().match(/([^\\]*)\.[^.]*$/)[1] + '_installer.exe';
+	installEncoder: function (encoderPath){
+        var process, localFile, extensionPath, installerPath;
+        
+		process = Components.classes["@mozilla.org/process/util;1"].getService(Components.interfaces.nsIProcess);
+		localFile  = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+		extensionPath = Components.classes['@mozilla.org/extensions/manager;1'].getService(Components.interfaces.nsIExtensionManager).getInstallLocation('xvc@renatorodrigues.com').getItemLocation('xvc@renatorodrigues.com');
+		installerPath = extensionPath.path + '\\' + encoderPath.toString().match(/([^\\]*)\.[^.]*$/)[1] + '_installer.exe';
 		
 		try {
 			localFile.initWithPath(installerPath);
@@ -181,49 +195,50 @@ var xvc = {
 	},
 	
 	initRemix: function() {
-		xvc.availableFormats = xvc.stringBundle.getString('xvc.availableFormats').split(',');
+        xvc.availableFormats = Application.prefs.getValue("extensions.xvc.availableFormats",0).split(',');
 		xvc.checkEncoder(xvc.availableFormats);
-		
-        // item no menu ferramentas
-		var newMenu = document.createElement('menu');
-		var popup = newMenu.appendChild(document.createElement('menupopup'));
-		newMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
-		newMenu.setAttribute('id', 'xvc-toolsmenu');
-
-        // item no menu firefox (appmenu) da versao 4
-		var newAppMenu = document.createElement('splitmenu');
-		var appPopup = newAppMenu.appendChild(document.createElement('menupopup'));
-		newAppMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
-		newAppMenu.setAttribute('id', 'xvc-appmenu');
-
-        // item no status bar        
-        var newStatusBarIcon = document.createElement('toolbarbutton');
-		var statusBarPopup = newStatusBarIcon.appendChild(document.createElement('menupopup'));
-		newStatusBarIcon.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
-		newStatusBarIcon.setAttribute('id','xvc-appbar');
-		newStatusBarIcon.setAttribute('removable','true');
-		newStatusBarIcon.setAttribute('type','menu');
-        //
-		
         
-        // TODO pegar os formatos possiveis no about:config
-		for(var i in xvc.availableFormats) {
+        // item no menu ferramentas
+        var newMenu = document.createElement('menu');
+        var popup = newMenu.appendChild(document.createElement('menupopup'));
+        newMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newMenu.setAttribute('id', 'xvc-toolsmenu');
+            
+/*
+        // item no menu firefox (appmenu) [firefox4]
+        var appPopup = newAppMenu.appendChild(document.createElement('menupopup'));
+        newAppMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newAppMenu.setAttribute('id', 'xvc-appmenu');
+
+        // item no status bar [firefox4]
+        var newStatusBarIcon = document.createElement('toolbarbutton');
+        var statusBarPopup = newStatusBarIcon.appendChild(document.createElement('menupopup'));
+        newStatusBarIcon.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newStatusBarIcon.setAttribute('id','xvc-appbar');
+        newStatusBarIcon.setAttribute('removable','true');
+        newStatusBarIcon.setAttribute('type','menu');
+*/
+        
+		for (var i in xvc.availableFormats) {
+            alert('a: ' + i);
             var format = xvc.availableFormats[i];
-            var label = xvc.stringBundle.getFormattedString('xvc.convertToFormat' , [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i])] );
-			popup.appendChild(xvc.addFormatMenu(format,label));
-			appPopup.appendChild(xvc.addFormatMenu(format,label));
-			statusBarPopup.appendChild(xvc.addFormatMenu(format,label));
+            var label = xvc.stringBundle.getFormattedString('xvc.convertToFormat', [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i]) ]);
+			popup.appendChild(xvc.addFormatMenu(format, label));
+			//appPopup.appendChild(xvc.addFormatMenu(format, label));
+			//statusBarPopup.appendChild(xvc.addFormatMenu(format, label));
 		}
         
-		popup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
-		appPopup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
-		statusBarPopup.appendChild( xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')) );
-		document.getElementById('menu_ToolsPopup').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
-        document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
-        document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
+		popup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
+        //appPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
+        //statusBarPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
+
+        document.getElementById('menu_ToolsPopup').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
+        //document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
+        //document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
+        
 	},
 	
-	addFormatMenu: function(format, label) {
+	addFormatMenu: function (format, label) {
 		var newMenuItem = document.createElement('menuitem');
 		newMenuItem.setAttribute('format' , format);
 		newMenuItem.setAttribute('label' , label);
@@ -239,16 +254,19 @@ var xvc = {
 	},
 	
 	showFileOpen: function() {
-		var nsIFilePicker = Components.interfaces.nsIFilePicker;
-		var filePicker = Components.classes['@mozilla.org/filepicker;1'].createInstance(nsIFilePicker);
+        var nsIFilePicker, filePicker,
+            result, files;
+        
+		nsIFilePicker = Components.interfaces.nsIFilePicker;
+		filePicker = Components.classes['@mozilla.org/filepicker;1'].createInstance(nsIFilePicker);
 		
 		filePicker.init(window, xvc.stringBundle.getString('xvc.fileOpen.title'), nsIFilePicker.modeOpenMultiple);
 		filePicker.appendFilters(nsIFilePicker.filterAll);
 		
-		var result = filePicker.show();
-		if(result == nsIFilePicker.returnOK) {
+		result = filePicker.show();
+		if (result == nsIFilePicker.returnOK) {
 			xvc.inputFiles = new Array();
-			var files = filePicker.files;
+			files = filePicker.files;
 			while (files.hasMoreElements()) {
 				xvc.inputFiles.push(files.getNext().QueryInterface(Components.interfaces.nsILocalFile).path.toString());
 			}
