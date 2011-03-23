@@ -6,7 +6,7 @@ var xvc = {
 		xvc.outputFormats = xvc.stringBundle.getString('xvc.outputFormats').split(',');
 		xvc.checkEncoder(xvc.outputFormats);
 		xvc.initRemix();
-		
+        
 		/*if (document.getElementById('appcontent')) {
 			document.getElementById('appcontent').addEventListener('DOMContentLoaded', xvc.run, true);
 		}*/
@@ -195,46 +195,53 @@ var xvc = {
 	},
 	
 	initRemix: function() {
+        var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+        var versionChecker = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
+        
+
+        if(versionChecker.compare(appInfo.version, "4.0") >= 0) {
+        }
         xvc.availableFormats = Application.prefs.getValue("extensions.xvc.availableFormats",0).split(',');
 		xvc.checkEncoder(xvc.availableFormats);
+        
+        var label = xvc.stringBundle.getString('xvc.convertLocalFile');
         
         // item no menu ferramentas
         var newMenu = document.createElement('menu');
         var popup = newMenu.appendChild(document.createElement('menupopup'));
-        newMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newMenu.setAttribute('label', label);
         newMenu.setAttribute('id', 'xvc-toolsmenu');
             
-/*
         // item no menu firefox (appmenu) [firefox4]
+		var newAppMenu = document.createElement('splitmenu');
         var appPopup = newAppMenu.appendChild(document.createElement('menupopup'));
-        newAppMenu.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newAppMenu.setAttribute('label', label);
         newAppMenu.setAttribute('id', 'xvc-appmenu');
+        alert(typeof(appPopup));
 
         // item no status bar [firefox4]
         var newStatusBarIcon = document.createElement('toolbarbutton');
         var statusBarPopup = newStatusBarIcon.appendChild(document.createElement('menupopup'));
-        newStatusBarIcon.setAttribute('label', xvc.stringBundle.getString('xvc.convertLocalFile'));
+        newStatusBarIcon.setAttribute('label', label);
         newStatusBarIcon.setAttribute('id','xvc-appbar');
         newStatusBarIcon.setAttribute('removable','true');
         newStatusBarIcon.setAttribute('type','menu');
-*/
         
 		for (var i in xvc.availableFormats) {
-            alert('a: ' + i);
             var format = xvc.availableFormats[i];
             var label = xvc.stringBundle.getFormattedString('xvc.convertToFormat', [ xvc.stringBundle.getString('xvc.encoder.name.' + xvc.availableFormats[i]) ]);
 			popup.appendChild(xvc.addFormatMenu(format, label));
-			//appPopup.appendChild(xvc.addFormatMenu(format, label));
-			//statusBarPopup.appendChild(xvc.addFormatMenu(format, label));
+			appPopup.appendChild(xvc.addFormatMenu(format, label));
+			statusBarPopup.appendChild(xvc.addFormatMenu(format, label));
 		}
         
 		popup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
-        //appPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
-        //statusBarPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
+        appPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
+        statusBarPopup.appendChild(xvc.addFormatMenu(xvc.availableFormats.join(','), xvc.stringBundle.getString('xvc.convertToAllFormats')));
 
         document.getElementById('menu_ToolsPopup').insertBefore(newMenu, document.getElementById('sanitizeSeparator'));
-        //document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
-        //document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
+        document.getElementById('appmenuSecondaryPane').insertBefore(newAppMenu, document.getElementById('appmenu_help'));
+        document.getElementById('addon-bar').insertBefore(newStatusBarIcon, document.getElementById('status-bar'));
         
 	},
 	
