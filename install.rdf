@@ -4,7 +4,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>xvc@renatorodrigues.com</em:id>
         <em:name>XUL Vídeo Converter</em:name>
-        <em:version>1.5.3</em:version>
+        <em:version>1.5.3.1</em:version>
         <em:description>Convert local video files</em:description>
         <em:creator>Renato Rodrigues (renato.sp@gmail.com)</em:creator>
         <em:contributor>Mario Felipe Rinaldi (lalo.rinaldi@gmail.com)</em:contributor>
@@ -13,7 +13,7 @@
         <em:type>2</em:type> <!-- type=extension --> 
         <em:updateLink>https://github.com/downloads/Coffeebreakers/xvc/xvc.xpi</em:updateLink>
         <em:updateURL>https://github.com/downloads/Coffeebreakers/xvc/update.rdf</em:updateURL>
-        <em:updateInfoURL>https://github.com/downloads/Coffeebreakers/xvc/update-info-1.5.3.xhtml</em:updateInfoURL>
+        <em:updateInfoURL>https://github.com/downloads/Coffeebreakers/xvc/update-info-1.5.3.1.xhtml</em:updateInfoURL>
 
 		<em:localized>
 			<Description>
